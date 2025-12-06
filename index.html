@@ -4,168 +4,328 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TSV Quick links</title>
+  
+  <!-- Fonts: Inter and Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Icons: FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    :root{
-      --teal: #008a8a; /* title */
-      --teal-light: #cfecec; /* hover */
-      --bg: #f7f9f9;
-      --card-bg: #ffffff;
-      --muted: #617171;
+    /* --- VARIABLES --- */
+    :root {
+      /* Palette */
+      --bg-color: #0f172a;       /* Dark Slate */
+      --container-bg: #1e293b;   /* Lighter Slate */
+      --card-bg: #334155;        /* Card Background */
+      --card-hover: #475569;     /* Card Hover */
+      --accent: #2dd4bf;         /* Teal (Brightened for dark mode) */
+      --text-main: #f8fafc;      /* White */
+      --text-muted: #94a3b8;     /* Gray */
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
 
-    html,body{
-      height:100%;
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:var(--bg);
-      color:#163333;
+    /* --- RESET & BASE --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .wrap{
-      max-width:780px;
-      margin:36px auto;
-      padding:20px;
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
     }
 
-    .hero{
-      width:100%;
-      height:200px;
-      border-radius:10px;
-      overflow:hidden;
-      display:block;
-      margin-bottom:20px;
-      object-fit:cover;
-      background:#ddd;
-      box-shadow:0 6px 18px rgba(5,20,20,0.06);
+    /* --- LAYOUT --- */
+    .wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    header{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:12px;
-      margin-bottom:18px;
+    /* --- HERO IMAGE --- */
+    .hero-container {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    h1{
-      margin:0;
-      color:var(--teal);
-      font-size:28px;
-      letter-spacing:0.2px;
+    .hero {
+      width: 100%;
+      height: 200px; /* Keep original height logic */
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
     }
 
-    p.lead{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
+    .hero:hover {
+      transform: scale(1.02);
     }
 
-    .card{
-      background:var(--card-bg);
-      border-radius:12px;
-      padding:14px;
-      box-shadow:0 6px 18px rgba(5,20,20,0.04);
+    /* --- HEADER TEXT --- */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
     }
 
-    .links{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      color: var(--accent);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
     }
 
-    .link-row{
-      display:block;
-      text-decoration:none;
-      padding:14px 16px;
-      border-radius:8px;
-      background:transparent;
-      transition:background 180ms ease,transform 120ms ease;
-      box-shadow:0 1px 0 rgba(10,10,10,0.02) inset;
-      color:inherit;
-      border:1px solid rgba(8,12,12,0.03);
+    p.lead {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
-    .link-row:hover{
-      background:var(--teal-light);
-      transform:translateY(-3px);
+    /* --- LINKS LIST --- */
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .link-title{
-      font-weight:600;
-      font-size:16px;
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      background-color: var(--container-bg);
+      padding: 1.25rem;
+      border-radius: 12px;
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .link-sub{
-      font-size:13px;
-      color:var(--muted);
-      margin-top:6px;
+    /* Left side content wrapper (Icon + Text) */
+    .link-content {
+      display: flex;
+      align-items: flex-start; /* Aligns icon with top of title */
+      gap: 1rem;
     }
 
-    @media (max-width:520px){
-      .wrap{padding:14px;margin:18px;}
-      h1{font-size:22px;}
-      .hero{height:140px;}
+    /* Icons styling */
+    .icon-box {
+      background: rgba(45, 212, 191, 0.1); /* Low opacity accent */
+      color: var(--accent);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      flex-shrink: 0; /* Prevent icon form squishing */
+    }
+
+    .text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .link-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .link-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Right Arrow */
+    .arrow-icon {
+      color: var(--card-bg);
+      margin-left: 10px;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    /* --- HOVER EFFECTS --- */
+    .link-row:hover {
+      background-color: var(--card-bg);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .link-row:hover .arrow-icon {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .link-row:hover .icon-box {
+      background: var(--accent);
+      color: var(--bg-color);
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 3rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 520px) {
+      .wrap { padding: 1rem; }
+      h1 { font-size: 1.75rem; }
+      .hero { height: 160px; }
+      .link-row { padding: 1rem; }
+      .icon-box { width: 36px; height: 36px; font-size: 1rem; }
     }
   </style>
 </head>
 <body>
+
   <main class="wrap">
-    <img class="hero" src="https://raw.githubusercontent.com/TSVAjman/tsvajman.github.io/refs/heads/main/FlatLay_AV_Equipments_800x225px_A.jpg" alt="TSV header image">
+    
+    <!-- Hero Image (Unchanged Source) -->
+    <div class="hero-container">
+      <img class="hero" src="https://raw.githubusercontent.com/TSVAjman/tsvajman.github.io/refs/heads/main/FlatLay_AV_Equipments_800x225px_A.jpg" alt="TSV header image">
+    </div>
 
     <header>
       <h1>TSV Quick Links</h1>
       <p class="lead">Mabilisang access sa mga mahalagang link — i-click lang para bumukas sa bagong tab.</p>
     </header>
 
-    <section class="card">
-      <nav class="links">
-        <a class="link-row" href="https://docs.google.com/spreadsheets/d/1cdWBt0VbDrKgdlysp8qzR03IuidUNeActFaSQZrEi0A/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
-          <div class="link-title">TSV Suguan — Laro</div>
-          <div class="link-sub">Suguan ng TSVs sa mga laro</div>
-        </a>
+    <nav class="links">
+      
+      <!-- 1. TSV Suguan (Laro) -->
+      <a class="link-row" href="https://docs.google.com/spreadsheets/d/1cdWBt0VbDrKgdlysp8qzR03IuidUNeActFaSQZrEi0A/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-table"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Suguan — Laro</div>
+            <div class="link-sub">Suguan ng TSVs sa mga laro</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="https://docs.google.com/spreadsheets/d/1NZTQ7L0tc0eA9P30iG68ItynRiy86IR9KZ821fMJNWY/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
-          <div class="link-title">TSV Suguan — Nightly Events</div>
-          <div class="link-sub">Suguan ng mga TSVs sa ibang aktibidad</div>
-        </a>
+      <!-- 2. TSV Suguan (Nightly Events) -->
+      <a class="link-row" href="https://docs.google.com/spreadsheets/d/1NZTQ7L0tc0eA9P30iG68ItynRiy86IR9KZ821fMJNWY/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Suguan — Nightly Events</div>
+            <div class="link-sub">Suguan ng mga TSVs sa ibang aktibidad</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="https://docs.google.com/forms/d/e/1FAIpQLScqLlFHt3J-gajXT8e2HOw8Qokyyig72GT1qm0Midx3EaEtlw/viewform?hl=en" target="_blank" rel="noopener noreferrer">
-          <div class="link-title">TSV Tupad Checklist Form</div>
-          <div class="link-sub">Mga dapat i-check bago ang actual na tupad</div>
-        </a>
+      <!-- 3. Tupad Checklist -->
+      <a class="link-row" href="https://docs.google.com/forms/d/e/1FAIpQLScqLlFHt3J-gajXT8e2HOw8Qokyyig72GT1qm0Midx3EaEtlw/viewform?hl=en" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Tupad Checklist Form</div>
+            <div class="link-sub">Mga dapat i-check bago ang actual na tupad</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="https://tsvajman.github.io/TSC_Contact_Numbers.htm" target="_blank"  rel="noopener noreferrer">
-          <div class="link-title">TSV Contact Numbers</div>
-          <div class="link-sub">Mga contact numbers, Telegram o email addresses ng TSVs</div>
-        </a>
+      <!-- 4. Contact Numbers -->
+      <a class="link-row" href="https://tsvajman.github.io/TSC_Contact_Numbers.htm" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-address-book"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Contact Numbers</div>
+            <div class="link-sub">Mga contact numbers, Telegram o email addresses ng TSVs</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="https://tsvajman.github.io/TSV_Webex_Links.htm" target="_blank"  rel="noopener noreferrer">
-          <div class="link-title">Webex Links, Etc.</div>
-          <div class="link-sub">Mga usual links na ginagamit sa mga aktibidad</div>
-        </a>
-        
-        <a class="link-row" href="#" rel="noopener noreferrer">
-          <div class="link-title">TSV Guidelines - District and Local SOPs</div>
-          <div class="link-sub">Mga Inipon na Guidelines para Karaniwang Pamamaraang Operasyon ng TSV sa Lokal at Distrito</div>
-        </a>
+      <!-- 5. Webex Links -->
+      <a class="link-row" href="https://tsvajman.github.io/TSV_Webex_Links.htm" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-video"></i></div>
+          <div class="text-group">
+            <div class="link-title">Webex Links, Etc.</div>
+            <div class="link-sub">Mga usual links na ginagamit sa mga aktibidad</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
+      
+      <!-- 6. Guidelines (SOPs) -->
+      <a class="link-row" href="#" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-book-open"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Guidelines - District/Local</div>
+            <div class="link-sub">Mga Inipon na Guidelines para Karaniwang Pamamaraang Operasyon</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="#" rel="noopener noreferrer">
-          <div class="link-title">TSV Guidelines - Equipments</div>
-          <div class="link-sub">Mga Inipon na Guidelines para sa mga Kagamitan ng TSV</div>
-        </a>
+      <!-- 7. Guidelines (Equipment) -->
+      <a class="link-row" href="#" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Guidelines - Equipments</div>
+            <div class="link-sub">Mga Inipon na Guidelines para sa mga Kagamitan ng TSV</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="#" rel="noopener noreferrer">
-          <div class="link-title">TSV Guidelines - Troubleshooting</div>
-          <div class="link-sub">Mga Inipon na Guidelines para sa Pagsasaayos ng Problema sa Kagamitan o Software/Apps na gamit TSV</div>
-        </a>
+      <!-- 8. Guidelines (Troubleshooting) -->
+      <a class="link-row" href="#" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="text-group">
+            <div class="link-title">TSV Guidelines - Troubleshooting</div>
+            <div class="link-sub">Mga Inipon na Guidelines para sa Pagsasaayos ng Problema</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
 
-        <a class="link-row" href="https://docs.google.com/spreadsheets/d/14on806D9BDhbYh4VceD_Y4ygIfdKlTKD8Rha5jUMs4I/edit?usp=sharing?hl=en" target="_blank" rel="noopener noreferrer">
-          <div class="link-title">List for Online WS</div>
-          <div class="link-sub">Pansamantalang Listahan for Sat and Sun Online WS</div>
-        </a>
-        
-      </nav>
-    </section>
+      <!-- 9. Online WS List -->
+      <a class="link-row" href="https://docs.google.com/spreadsheets/d/14on806D9BDhbYh4VceD_Y4ygIfdKlTKD8Rha5jUMs4I/edit?usp=sharing?hl=en" target="_blank" rel="noopener noreferrer">
+        <div class="link-content">
+          <div class="icon-box"><i class="fa-solid fa-list-check"></i></div>
+          <div class="text-group">
+            <div class="link-title">List for Online WS</div>
+            <div class="link-sub">Pansamantalang Listahan for Sat and Sun Online WS</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-icon"></i>
+      </a>
+
+    </nav>
+
+    <footer>
+      TSV Quick Links &copy; 2025
+    </footer>
   </main>
 </body>
 </html>
