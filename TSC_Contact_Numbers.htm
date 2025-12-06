@@ -9,35 +9,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- QR Code Library (Loads automatically) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
-    /* --- THEME CONFIGURATION (CSS VARIABLES) --- */
+    /* --- THEME CONFIGURATION --- */
     :root {
-      /* Default to LIGHT Mode */
-      --bg-body: #f3f4f6;       /* Light Gray */
-      --bg-card: #ffffff;       /* White */
-      --text-main: #1f2937;     /* Dark Charcoal */
-      --text-muted: #6b7280;    /* Gray */
-      --accent: #0d9488;        /* Teal */
-      --accent-bg: #ccfbf1;     /* Light Teal Background */
-      --border: #e5e7eb;        /* Light Border */
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --accent: #0d9488;
+      --accent-bg: #ccfbf1;
+      --border: #e5e7eb;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      --trainee-bg: #fef3c7;    /* Light Yellow/Orange for trainees */
-      --trainee-text: #d97706;  /* Dark Orange for trainees */
+      --trainee-bg: #fef3c7;
+      --trainee-text: #d97706;
+      --modal-bg: rgba(0, 0, 0, 0.6);
     }
 
-    /* AUTOMATIC DARK MODE OVERRIDES */
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-body: #0f172a;     /* Dark Slate */
-        --bg-card: #1e293b;     /* Lighter Slate */
-        --text-main: #f1f5f9;   /* Off-white */
-        --text-muted: #94a3b8;  /* Light Gray */
-        --accent: #2dd4bf;      /* Bright Teal */
-        --accent-bg: rgba(45, 212, 191, 0.1); /* Transparent Teal */
-        --border: #334155;      /* Dark Border */
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --accent: #2dd4bf;
+        --accent-bg: rgba(45, 212, 191, 0.1);
+        --border: #334155;
         --trainee-bg: rgba(245, 158, 11, 0.15); 
         --trainee-text: #fbbf24;
+        --modal-bg: rgba(0, 0, 0, 0.85);
       }
     }
 
@@ -49,96 +51,62 @@
       margin: 0;
       padding: 0;
       line-height: 1.5;
-      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
-      max-width: 900px; /* Wider for grid layout */
+      max-width: 900px;
       margin: 40px auto;
       padding: 0 20px;
     }
 
     /* --- HEADER --- */
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+    header { text-align: center; margin-bottom: 40px; }
+    h1 { color: var(--accent); margin: 0 0 10px 0; font-size: 2rem; }
+    h2 { font-weight: 400; font-size: 1rem; color: var(--text-muted); margin: 0; }
 
-    h1 {
-      color: var(--accent);
-      margin: 0 0 10px 0;
-      font-size: 2rem;
-      letter-spacing: -0.5px;
-    }
-
-    h2 {
-      font-weight: 400;
-      font-size: 1rem;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    /* --- GRID LAYOUT --- */
+    /* --- GRID --- */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 20px;
     }
 
-    /* --- CARD STYLES --- */
+    /* --- CARD --- */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 24px;
       box-shadow: var(--shadow);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
       position: relative;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      border-color: var(--accent);
-    }
+    .card:hover { transform: translateY(-3px); border-color: var(--accent); }
 
-    /* Name & Header inside card */
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 15px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
 
-    .name {
-      font-weight: 700;
-      font-size: 1.125rem;
-      color: var(--text-main);
-    }
+    .name { font-weight: 700; font-size: 1.125rem; color: var(--text-main); }
 
     /* Badges */
     .badge {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 20px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
+    .badge-trainee { background-color: var(--trainee-bg); color: var(--trainee-text); }
+    .badge-member { background-color: var(--accent-bg); color: var(--accent); }
 
-    .badge-trainee {
-      background-color: var(--trainee-bg);
-      color: var(--trainee-text);
-    }
-
-    .badge-member {
-      background-color: var(--accent-bg);
-      color: var(--accent);
-    }
-
-    /* Contact Rows */
+    /* Contacts */
     .contact-row {
       display: flex;
       align-items: center;
@@ -146,32 +114,69 @@
       font-size: 0.95rem;
       color: var(--text-muted);
     }
+    .contact-row i { width: 24px; color: var(--accent); text-align: center; margin-right: 12px; }
+    .contact-row a { color: var(--text-main); text-decoration: none; }
+    .contact-row a:hover { color: var(--accent); text-decoration: underline; }
 
-    .contact-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .contact-row i {
-      width: 24px;
-      color: var(--accent);
-      text-align: center;
-      margin-right: 12px;
-    }
-
-    .contact-row a {
-      color: var(--text-main);
-      text-decoration: none;
+    /* --- QR BUTTON --- */
+    .qr-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
       transition: color 0.2s;
+      margin-left: 10px;
+    }
+    .qr-btn:hover { color: var(--accent); }
+
+    /* --- MODAL (POPUP) --- */
+    #qrModal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--modal-bg);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
     }
 
-    .contact-row a:hover {
-      color: var(--accent);
-      text-decoration: underline;
+    .modal-content {
+      background-color: #ffffff; /* Always white for QR readability */
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      position: relative;
+      max-width: 300px;
+      width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
-    /* --- MOBILE --- */
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: #333;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    #qr-container {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .modal-title { color: #333; font-weight: 600; margin-bottom: 5px; }
+    .modal-desc { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+
+    /* Mobile Responsive */
     @media (max-width: 600px) {
-      .container { margin: 20px auto; }
       .grid { grid-template-columns: 1fr; }
       h1 { font-size: 1.5rem; }
     }
@@ -182,28 +187,34 @@
   <div class="container">
     <header>
       <h1><i class="fa-solid fa-headset"></i> TSV Support</h1>
-      <h2>Technical Support for Video Streaming — Team Directory</h2>
+      <h2>Tap the QR icon to scan and save contact</h2>
     </header>
 
     <div class="grid">
+
+      <!-- CARD TEMPLATE -->
+      <!-- When adding a new person, just Copy/Paste from <div class="card"> to </div> -->
 
       <!-- Louie Alma -->
       <div class="card">
         <div class="card-header">
           <div class="name">Louie Alma</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971561959969">+971 56 195 9969</a>
+          <a href="tel:+971561959969" class="phone-link">+971 56 195 9969</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/louiealma" target="_blank">@louiealma</a>
+          <a href="https://t.me/louiealma" target="_blank" class="telegram-link">@louiealma</a>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-envelope"></i>
-          <a href="mailto:louie@multimediasolutions.ae">louie@multimediasolutions.ae</a>
+          <a href="mailto:louie@multimediasolutions.ae" class="email-link">louie@multimediasolutions.ae</a>
         </div>
       </div>
 
@@ -211,19 +222,22 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Mark Morgan Miranda</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971559876543">+971 55 987 6543</a>
+          <a href="tel:+971559876543" class="phone-link">+971 55 987 6543</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/Zaqxen" target="_blank">@Zaqxen</a>
+          <a href="https://t.me/Zaqxen" target="_blank" class="telegram-link">@Zaqxen</a>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-envelope"></i>
-          <a href="mailto:miranda.markmorgan@gmail.com">miranda.markmorgan@gmail.com</a>
+          <a href="mailto:miranda.markmorgan@gmail.com" class="email-link">miranda.markmorgan@gmail.com</a>
         </div>
       </div>
 
@@ -231,15 +245,18 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Esmer Buan</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971509811628">+971 50 981 1628</a>
+          <a href="tel:+971509811628" class="phone-link">+971 50 981 1628</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/remse7" target="_blank">@remse7</a>
+          <a href="https://t.me/remse7" target="_blank" class="telegram-link">@remse7</a>
         </div>
       </div>
 
@@ -247,15 +264,18 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Paul Vincent Crespo</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971509463976">+971 50 946 3976</a>
+          <a href="tel:+971509463976" class="phone-link">+971 50 946 3976</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/PaulieCrespo" target="_blank">@PaulieCrespo</a>
+          <a href="https://t.me/PaulieCrespo" target="_blank" class="telegram-link">@PaulieCrespo</a>
         </div>
       </div>
 
@@ -263,11 +283,14 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Andrey Buan</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971568567796">+971 56 856 7796</a>
+          <a href="tel:+971568567796" class="phone-link">+971 56 856 7796</a>
         </div>
       </div>
 
@@ -275,11 +298,14 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Christopher Jardeleza</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971552893552">+971 55 289 3552</a>
+          <a href="tel:+971552893552" class="phone-link">+971 55 289 3552</a>
         </div>
       </div>
 
@@ -287,15 +313,18 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Jomar Soriano</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971563087110">+971 56 308 7110</a>
+          <a href="tel:+971563087110" class="phone-link">+971 56 308 7110</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/Jomar0919" target="_blank">@Jomar0919</a>
+          <a href="https://t.me/Jomar0919" target="_blank" class="telegram-link">@Jomar0919</a>
         </div>
       </div>
 
@@ -303,15 +332,18 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Karl Stephen Alma</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971505751093">+971 50 575 1093</a>
+          <a href="tel:+971505751093" class="phone-link">+971 50 575 1093</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/Stiffennn" target="_blank">@Stiffennn</a>
+          <a href="https://t.me/Stiffennn" target="_blank" class="telegram-link">@Stiffennn</a>
         </div>
       </div>
 
@@ -319,11 +351,14 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Mikhaela Alma</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971507602529">+971 50 760 2529</a>
+          <a href="tel:+971507602529" class="phone-link">+971 50 760 2529</a>
         </div>
       </div>
 
@@ -331,29 +366,35 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Dominic Mateo</div>
-          <span class="badge badge-member">Member</span>
+          <div>
+            <span class="badge badge-member">Member</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971562147410">+971 56 214 7410</a>
+          <a href="tel:+971562147410" class="phone-link">+971 56 214 7410</a>
         </div>
         <div class="contact-row">
           <i class="fa-brands fa-telegram"></i>
-          <a href="https://t.me/hamakieee" target="_blank">@hamakieee</a>
+          <a href="https://t.me/hamakieee" target="_blank" class="telegram-link">@hamakieee</a>
         </div>
       </div>
 
-      <!-- TRAINEES SECTION -->
-      
+      <!-- Trainees -->
+
       <!-- Carla Mae Vidal -->
       <div class="card">
         <div class="card-header">
           <div class="name">Carla Mae Vidal</div>
-          <span class="badge badge-trainee">Trainee</span>
+          <div>
+            <span class="badge badge-trainee">Trainee</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971508368747">+971 50 836 8747</a>
+          <a href="tel:+971508368747" class="phone-link">+971 50 836 8747</a>
         </div>
       </div>
 
@@ -361,11 +402,14 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Aven Chrysler Alcalde</div>
-          <span class="badge badge-trainee">Trainee</span>
+          <div>
+            <span class="badge badge-trainee">Trainee</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971504462556">+971 50 446 2556</a>
+          <a href="tel:+971504462556" class="phone-link">+971 50 446 2556</a>
         </div>
       </div>
 
@@ -373,11 +417,14 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Megan Chloe Alma</div>
-          <span class="badge badge-trainee">Trainee</span>
+          <div>
+            <span class="badge badge-trainee">Trainee</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971506913732">+971 50 691 3732</a>
+          <a href="tel:+971506913732" class="phone-link">+971 50 691 3732</a>
         </div>
       </div>
 
@@ -385,16 +432,90 @@
       <div class="card">
         <div class="card-header">
           <div class="name">Aedriel Buan</div>
-          <span class="badge badge-trainee">Trainee</span>
+          <div>
+            <span class="badge badge-trainee">Trainee</span>
+            <button class="qr-btn" onclick="showQR(this)"><i class="fa-solid fa-qrcode"></i></button>
+          </div>
         </div>
         <div class="contact-row">
           <i class="fa-solid fa-phone"></i>
-          <a href="tel:+971543458819">+971 54 345 8819</a>
+          <a href="tel:+971543458819" class="phone-link">+971 54 345 8819</a>
         </div>
       </div>
 
     </div> <!-- End Grid -->
   </div>
+
+  <!-- QR MODAL POPUP -->
+  <div id="qrModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeQR()">&times;</span>
+      <div class="modal-title" id="qrName">Contact Name</div>
+      <div class="modal-desc">Scan to add to contacts</div>
+      <div id="qr-container"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    function showQR(button) {
+      // 1. Find the card container that holds the button clicked
+      const card = button.closest('.card');
+
+      // 2. Extract Data from the HTML of that specific card
+      const name = card.querySelector('.name').innerText;
+      
+      // Get phone (handle if missing)
+      const phoneEl = card.querySelector('.phone-link');
+      const phone = phoneEl ? phoneEl.innerText.replace(/\s/g, '') : ""; // Remove spaces
+
+      // Get email (handle if missing)
+      const emailEl = card.querySelector('.email-link');
+      const email = emailEl ? emailEl.innerText : "";
+
+      // Get telegram (handle if missing)
+      const telegramEl = card.querySelector('.telegram-link');
+      const telegram = telegramEl ? telegramEl.innerText : "";
+
+      // 3. Create vCard Format (Standard Contact File)
+      let vCard = "BEGIN:VCARD\nVERSION:3.0\n";
+      vCard += "FN:" + name + "\n";
+      if(phone) vCard += "TEL;TYPE=CELL:" + phone + "\n";
+      if(email) vCard += "EMAIL:" + email + "\n";
+      if(telegram) vCard += "NOTE:Telegram: " + telegram + "\n";
+      vCard += "END:VCARD";
+
+      // 4. Update Modal Titles
+      document.getElementById('qrName').innerText = name;
+      const container = document.getElementById('qr-container');
+      container.innerHTML = ""; // Clear previous QR
+
+      // 5. Generate New QR Code
+      new QRCode(container, {
+        text: vCard,
+        width: 180,
+        height: 180,
+        colorDark : "#000000",
+        colorLight : "#ffffff", // Always white background for scanning
+        correctLevel : QRCode.CorrectLevel.M
+      });
+
+      // 6. Show Modal
+      document.getElementById('qrModal').style.display = 'flex';
+    }
+
+    function closeQR() {
+      document.getElementById('qrModal').style.display = 'none';
+    }
+
+    // Close modal if clicking outside the white box
+    window.onclick = function(event) {
+      const modal = document.getElementById('qrModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
 
 </body>
 </html>
