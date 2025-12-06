@@ -4,192 +4,396 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TSV Team Contacts</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
+    /* --- THEME CONFIGURATION (CSS VARIABLES) --- */
+    :root {
+      /* Default to LIGHT Mode */
+      --bg-body: #f3f4f6;       /* Light Gray */
+      --bg-card: #ffffff;       /* White */
+      --text-main: #1f2937;     /* Dark Charcoal */
+      --text-muted: #6b7280;    /* Gray */
+      --accent: #0d9488;        /* Teal */
+      --accent-bg: #ccfbf1;     /* Light Teal Background */
+      --border: #e5e7eb;        /* Light Border */
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --trainee-bg: #fef3c7;    /* Light Yellow/Orange for trainees */
+      --trainee-text: #d97706;  /* Dark Orange for trainees */
+    }
+
+    /* AUTOMATIC DARK MODE OVERRIDES */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-body: #0f172a;     /* Dark Slate */
+        --bg-card: #1e293b;     /* Lighter Slate */
+        --text-main: #f1f5f9;   /* Off-white */
+        --text-muted: #94a3b8;  /* Light Gray */
+        --accent: #2dd4bf;      /* Bright Teal */
+        --accent-bg: rgba(45, 212, 191, 0.1); /* Transparent Teal */
+        --border: #334155;      /* Dark Border */
+        --trainee-bg: rgba(245, 158, 11, 0.15); 
+        --trainee-text: #fbbf24;
+      }
+    }
+
+    /* --- BASE STYLES --- */
     body {
-      font-family: "Poppins", Arial, sans-serif;
-      background-color: #f7fafa;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
       margin: 0;
       padding: 0;
-      text-align: center;
-      color: #333;
+      line-height: 1.5;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
-      max-width: 600px;
-      margin: 60px auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      padding: 30px;
+      max-width: 900px; /* Wider for grid layout */
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* --- HEADER --- */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
     }
 
     h1 {
-      color: teal;
-      margin-bottom: 10px;
+      color: var(--accent);
+      margin: 0 0 10px 0;
+      font-size: 2rem;
+      letter-spacing: -0.5px;
     }
 
     h2 {
-      font-weight: normal;
-      font-size: 16px;
-      color: #666;
-      margin-bottom: 30px;
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin: 0;
     }
 
-    .team-member {
-      background: #f0fafa;
-      margin: 12px 0;
-      padding: 18px;
+    /* --- GRID LAYOUT --- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    /* --- CARD STYLES --- */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      transition: background 0.3s;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
     }
 
-    .team-member:hover {
-      background: #d7f2f2;
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      border-color: var(--accent);
+    }
+
+    /* Name & Header inside card */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
 
     .name {
+      font-weight: 700;
+      font-size: 1.125rem;
+      color: var(--text-main);
+    }
+
+    /* Badges */
+    .badge {
+      font-size: 0.75rem;
       font-weight: 600;
-      font-size: 18px;
-      color: #006666;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-trainee {
+      background-color: var(--trainee-bg);
+      color: var(--trainee-text);
+    }
+
+    .badge-member {
+      background-color: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    /* Contact Rows */
+    .contact-row {
+      display: flex;
+      align-items: center;
       margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
     }
 
-    .trainee {
-      font-weight: 400;
-      font-style: italic;
-      font-size: 18px;
-      color: #006666;
-      margin-bottom: 8px;
+    .contact-row:last-child {
+      margin-bottom: 0;
     }
 
-    .contact-info {
-      font-size: 15px;
-      line-height: 1.6;
+    .contact-row i {
+      width: 24px;
+      color: var(--accent);
+      text-align: center;
+      margin-right: 12px;
     }
 
-    .contact-info a {
-      color: #008c8c;
+    .contact-row a {
+      color: var(--text-main);
       text-decoration: none;
+      transition: color 0.2s;
     }
 
-    .contact-info a:hover {
+    .contact-row a:hover {
+      color: var(--accent);
       text-decoration: underline;
+    }
+
+    /* --- MOBILE --- */
+    @media (max-width: 600px) {
+      .container { margin: 20px auto; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Technical Support for Video Streaming</h1>
-    <h2>Mga detalye ng contact ng TSV Team</h2>
+    <header>
+      <h1><i class="fa-solid fa-headset"></i> TSV Support</h1>
+      <h2>Technical Support for Video Streaming — Team Directory</h2>
+    </header>
 
-    <div class="team-member">
-      <div class="name">Louie Alma</div>
-      <div class="contact-info">
-        📞  +971 56 195 9969<br>
-        💬  Telegram: <a href="https://t.me/louiealma" target="_blank">@louiealma</a><br>
-        📧  <a href="mailto:louie@multimediasolutions.ae">louie@multimediasolutions.ae</a>
+    <div class="grid">
+
+      <!-- Louie Alma -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Louie Alma</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971561959969">+971 56 195 9969</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/louiealma" target="_blank">@louiealma</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-envelope"></i>
+          <a href="mailto:louie@multimediasolutions.ae">louie@multimediasolutions.ae</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Mark Morgan Miranda</div>
-      <div class="contact-info">
-        📞  +971 55 987 6543<br>
-        💬  Telegram: <a href="https://t.me/Zaqxen" target="_blank">@Zaqxen</a><br>
-        📧  <a href="mailto:miranda.markmorgan@gmail.com">miranda.markmorgan@gmail.com</a>
+      <!-- Mark Morgan Miranda -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Mark Morgan Miranda</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971559876543">+971 55 987 6543</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/Zaqxen" target="_blank">@Zaqxen</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-envelope"></i>
+          <a href="mailto:miranda.markmorgan@gmail.com">miranda.markmorgan@gmail.com</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Esmer Buan</div>
-      <div class="contact-info">
-        📞  +971 50 981 1628<br>
-        💬  Telegram: <a href="https://t.me/remse7" target="_blank">@remse7</a>
+      <!-- Esmer Buan -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Esmer Buan</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971509811628">+971 50 981 1628</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/remse7" target="_blank">@remse7</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Paul Vincent Crespo</div>
-      <div class="contact-info">
-        📞  +971 50 946 3976<br>
-        💬  Telegram: <a href="https://t.me/@PaulieCrespo" target="_blank">@PaulieCrespo</a>
+      <!-- Paul Vincent Crespo -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Paul Vincent Crespo</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971509463976">+971 50 946 3976</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/PaulieCrespo" target="_blank">@PaulieCrespo</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Andrey Buan</div>
-      <div class="contact-info">
-        📞  +971 56 856 7796<br>
+      <!-- Andrey Buan -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Andrey Buan</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971568567796">+971 56 856 7796</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Christopher Lloyd Jardeleza</div>
-      <div class="contact-info">
-        📞  +971 55 289 3552<br>
+      <!-- Christopher Lloyd Jardeleza -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Christopher Jardeleza</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971552893552">+971 55 289 3552</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Jomar Soriano</div>
-      <div class="contact-info">
-        📞  +971 56 308 7110<br>
-        💬  Telegram: <a href="https://t.me/Jomar0919" target="_blank">@Jomar0919</a>
+      <!-- Jomar Soriano -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Jomar Soriano</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971563087110">+971 56 308 7110</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/Jomar0919" target="_blank">@Jomar0919</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Karl Stephen Alma</div>
-      <div class="contact-info">
-        📞  +971 50 575 1093<br>
-        💬  Telegram: <a href="https://t.me/Stiffennn" target="_blank">@Stiffennn</a>
+      <!-- Karl Stephen Alma -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Karl Stephen Alma</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971505751093">+971 50 575 1093</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/Stiffennn" target="_blank">@Stiffennn</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Mikhaela Alma</div>
-      <div class="contact-info">
-        📞  +971 50 760 2529<br>
+      <!-- Mikhaela Alma -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Mikhaela Alma</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971507602529">+971 50 760 2529</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="name">Dominic Mateo</div>
-      <div class="contact-info">
-        📞  +971 56 214 7410<br>
-        💬  Telegram: <a href="https://t.me/hamakieee" target="_blank">@hamakieee</a>
+      <!-- Dominic Mateo -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Dominic Mateo</div>
+          <span class="badge badge-member">Member</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971562147410">+971 56 214 7410</a>
+        </div>
+        <div class="contact-row">
+          <i class="fa-brands fa-telegram"></i>
+          <a href="https://t.me/hamakieee" target="_blank">@hamakieee</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="trainee">Trainee - Carla Mae Vidal</div>
-      <div class="contact-info">
-        📞  +971 50 836 8747<br>
+      <!-- TRAINEES SECTION -->
+      
+      <!-- Carla Mae Vidal -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Carla Mae Vidal</div>
+          <span class="badge badge-trainee">Trainee</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971508368747">+971 50 836 8747</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="trainee">Trainee - Aven Chrysler Alcalde</div>
-      <div class="contact-info">
-        📞  +971 50 446 2556<br>
+      <!-- Aven Chrysler Alcalde -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Aven Chrysler Alcalde</div>
+          <span class="badge badge-trainee">Trainee</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971504462556">+971 50 446 2556</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="trainee">Trainee - Megan Chloe Alma</div>
-      <div class="contact-info">
-        📞  +971 50 691 3732<br>
+      <!-- Megan Chloe Alma -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Megan Chloe Alma</div>
+          <span class="badge badge-trainee">Trainee</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971506913732">+971 50 691 3732</a>
+        </div>
       </div>
-    </div>
 
-    <div class="team-member">
-      <div class="trainee">Trainee - Aedriel Buan</div>
-      <div class="contact-info">
-        📞  +971 54 345 8819<br>
+      <!-- Aedriel Buan -->
+      <div class="card">
+        <div class="card-header">
+          <div class="name">Aedriel Buan</div>
+          <span class="badge badge-trainee">Trainee</span>
+        </div>
+        <div class="contact-row">
+          <i class="fa-solid fa-phone"></i>
+          <a href="tel:+971543458819">+971 54 345 8819</a>
+        </div>
       </div>
-    </div>
 
+    </div> <!-- End Grid -->
   </div>
 
 </body>
