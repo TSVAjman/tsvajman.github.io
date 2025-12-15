@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TSV Revised Checklist</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+h1 { text-align: center; color: teal; }
+label { font-weight: bold; }
+select, input[type="text"], textarea { width: 100%; padding: 6px; margin-top: 4px; box-sizing: border-box; }
+textarea { resize: vertical; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
+th { background: #f0f8f8; }
+.center { text-align: center; }
+.actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+button { padding: 10px 14px; cursor: pointer; }
+.signature-box { border: 1px solid #aaa; height: 120px; width: 100%; touch-action: none; }
+.small-input { max-width: 250px; }
+@media print { .actions { display: none; } }
+</style>
+</head>
+<body>
+
+<h1>TSV Revised Checklist</h1>
+
+<label>Araw at Oras</label>
+<select id="session">
+  <option value="">Select session</option>
+  <option>Tuesday 8:45pm</option>
+  <option>Friday 8:45pm</option>
+  <option>Saturday 6:45am</option>
+  <option>Sunday 10:45am</option>
+  <option value="other">Other</option>
+</select>
+<input type="text" id="sessionOther" placeholder="Please specify" style="display:none;" />
+
+<br><br>
+<label>Tumupad na TSV(s)</label>
+<input type="text" id="operator" placeholder="Enter name(s)" />
+
+<br><br>
+<label>Date</label>
+<input type="text" id="topDate" class="small-input" />
+
+<label>Time</label>
+<input type="text" id="topTime" class="small-input" />
+
+<table>
+<thead>
+<tr>
+<th>No.</th>
+<th>Task Description</th>
+<th class="center">Opo</th>
+<th class="center">Hindi</th>
+<th>Paki-note bakit hindi naisagawa</th>
+</tr>
+</thead>
+<tbody id="checklistBody"></tbody>
+</table>
+
+<table>
+<tr>
+<th colspan="2">Mga naging suliranin sa pagtupad (Technical o Operational  ay paki-note po):</th>
+</tr>
+<tr>
+<td rowspan="5">
+<textarea id="remarks" rows="8" placeholder="Ilagay ang mga naging suliranin..."></textarea>
+</td>
+<td>Date:<br><input type="text" id="bottomDate"></td>
+</tr>
+<tr><td>Time:<br><input type="text" id="bottomTime"></td></tr>
+<tr><td>PD/M:<br><input type="text" id="pdm"></td></tr>
+<tr><td>Lagda:<br>
+<canvas id="signature" class="signature-box"></canvas><br>
+<button type="button" onclick="clearSignature()">Clear</button>
+</td></tr>
+</table>
+
+<div class="actions">
+<button onclick="saveData()">Save</button>
+<button onclick="submitEmail()">Submit</button>
+<button onclick="window.print()">Export to PDF</button>
+</div>
+
+<script>
+// -------- CHECKLIST TASKS (RESTORED & FIXED) --------
+const tasks = [
+	'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
+	'Na-set up ba ang Webex bago ang laro (hard mute, meeting option – na turn off ang send reaction, raise hand, share content)?',
+	'Na-check ba ang files na gagamitin (Video/Awit file week number, Timestamp ng pagpapatayo, volume ng audio sa mga pagpapatayo)?',
+	'Na-coordinate ba sa mga mang-aawit ang takda ng mga awit (Live at Video File/Awit File)?',
+	'Nagawa ba ang pakikipag coordinate sa PD o M na mangunguna?',
+	'Maayos ba ang backup computer - both Video/Audio?',
+	'Maayos ba ang Audio at Video sa bawat rooms?',
+	'Nai-setup o nai-saayos ba ang ba ang English na laro?',
+	'Na turn off ba ng maayos ang lahat ng kagamitan bago linisin ang TSV Room/Area',
+	'<em>Iba pang bagay na hindi nailagay sa itaas, pakilagay sa note field sa kanan</em>'
+];
+
+const checklistBody = document.getElementById('checklistBody');
+
+tasks.forEach((task, index) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${index + 1}</td>
+    <td>${task}</td>
+    <td class="center"><input type="checkbox" class="opo" data-i="${index}"></td>
+    <td class="center"><input type="checkbox" class="hindi" data-i="${index}"></td>
+    <td><input type="text" class="comment"></td>`;
+  checklistBody.appendChild(tr);
+});
+
+// -------- OPO / HINDI MUTUAL EXCLUSION --------
+checklistBody.addEventListener('change', e => {
+  if (e.target.classList.contains('opo')) {
+    checklistBody.querySelectorAll(`.hindi[data-i="${e.target.dataset.i}"]`).forEach(h => h.checked = false);
+  }
+  if (e.target.classList.contains('hindi')) {
+    checklistBody.querySelectorAll(`.opo[data-i="${e.target.dataset.i}"]`).forEach(o => o.checked = false);
+  }
+});
+
+// -------- SESSION OTHER --------
+const session = document.getElementById('session');
+const sessionOther = document.getElementById('sessionOther');
+session.addEventListener('change', () => {
+  sessionOther.style.display = session.value === 'other' ? 'block' : 'none';
+});
+
+// -------- AUTO DATE & TIME --------
+function setDateTime() {
+  const now = new Date();
+  const d = now.toLocaleDateString();
+  const t = now.toLocaleTimeString();
+  if (!topDate.value) topDate.value = d;
+  if (!topTime.value) topTime.value = t;
+  if (!bottomDate.value) bottomDate.value = d;
+  if (!bottomTime.value) bottomTime.value = t;
+}
+setDateTime();
+
+// -------- SIGNATURE --------
+const canvas = document.getElementById('signature');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+function resizeCanvas() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+canvas.addEventListener('pointerdown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+canvas.addEventListener('pointermove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+canvas.addEventListener('pointerup', () => drawing = false);
+canvas.addEventListener('pointerleave', () => drawing = false);
+
+function clearSignature() { ctx.clearRect(0,0,canvas.width,canvas.height); }
+
+// -------- SAVE / LOAD (SAFE, NO DOM OVERWRITE) --------
+function collectData() {
+  const rows = [];
+  document.querySelectorAll('#checklistBody tr').forEach((tr, i) => {
+    rows.push({
+      opo: tr.querySelector('.opo').checked,
+      hindi: tr.querySelector('.hindi').checked,
+      comment: tr.querySelector('.comment').value
+    });
+  });
+  return {
+    session: session.value,
+    sessionOther: sessionOther.value,
+    operator: operator.value,
+    topDate: topDate.value,
+    topTime: topTime.value,
+    bottomDate: bottomDate.value,
+    bottomTime: bottomTime.value,
+    pdm: pdm.value,
+    remarks: remarks.value,
+    checklist: rows
+  };
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('tsvChecklistData', JSON.stringify(collectData()));
+    alert('Checklist saved on this device/browser.');
+  } catch {
+    alert('Saving failed. Storage may be blocked by browser privacy settings.');
+  }
+}
+
+function loadData() {
+  const saved = localStorage.getItem('tsvChecklistData');
+  if (!saved) return;
+  const data = JSON.parse(saved);
+
+  session.value = data.session || '';
+  sessionOther.value = data.sessionOther || '';
+  operator.value = data.operator || '';
+  topDate.value = data.topDate || '';
+  topTime.value = data.topTime || '';
+  bottomDate.value = data.bottomDate || '';
+  bottomTime.value = data.bottomTime || '';
+  pdm.value = data.pdm || '';
+  remarks.value = data.remarks || '';
+
+  document.querySelectorAll('#checklistBody tr').forEach((tr, i) => {
+    if (!data.checklist[i]) return;
+    tr.querySelector('.opo').checked = data.checklist[i].opo;
+    tr.querySelector('.hindi').checked = data.checklist[i].hindi;
+    tr.querySelector('.comment').value = data.checklist[i].comment;
+  });
+}
+loadData();
+
+// -------- EMAIL --------
+function submitEmail() {
+  window.location.href = 'mailto:louwiz@gmail.com?subject=TSV Revised Checklist';
+}
+</script>
+</body>
+</html>
