@@ -43,7 +43,6 @@ button { padding: 10px 14px; cursor: pointer; }
 <br><br>
 <label>Date</label>
 <input type="text" id="topDate" class="small-input" />
-
 <label>Time</label>
 <input type="text" id="topTime" class="small-input" />
 
@@ -62,7 +61,7 @@ button { padding: 10px 14px; cursor: pointer; }
 
 <table>
 <tr>
-<th colspan="2">Mga naging suliranin sa pagtupad (Technical o Operational  ay paki-note po):</th>
+<th colspan="2">Mga naging suliranin sa pagtupad (Technical o Operational ay paki-note po):</th>
 </tr>
 <tr>
 <td rowspan="5">
@@ -72,23 +71,25 @@ button { padding: 10px 14px; cursor: pointer; }
 </tr>
 <tr><td>Time:<br><input type="text" id="bottomTime"></td></tr>
 <tr><td>PD/M:<br><input type="text" id="pdm"></td></tr>
-<tr><td>Lagda:<br>
+<tr>
+<td>Lagda:<br>
 <canvas id="signature" class="signature-box"></canvas><br>
 <button type="button" onclick="clearSignature()">Clear</button>
-</td></tr>
+</td>
+</tr>
 </table>
 
 <div class="actions">
 <button onclick="saveData()">Save</button>
 <button onclick="submitEmail()">Submit</button>
 <button onclick="exportPDF()">Export to PDF</button>
-
 </div>
 
 <script>
-// -------- CHECKLIST TASKS (RESTORED & FIXED) --------
-const tasks = [
-  'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
+// -------- GENERATE CHECKLIST ROWS --------
+function generateChecklistRows() {
+  const tasks = [
+	'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
 	'Na-set up ba ang Webex bago ang laro (hard mute, meeting option – na turn off ang send reaction, raise hand, share content)?',
 	'Na-check ba ang files na gagamitin (Video/Awit file week number, Timestamp ng pagpapatayo, volume ng audio sa mga pagpapatayo)?',
 	'Na-coordinate ba sa mga mang-aawit ang takda ng mga awit (Live at Video File/Awit File)?',
@@ -98,28 +99,34 @@ const tasks = [
 	'Nai-setup o nai-saayos ba ang ba ang English na laro?',
 	'Na turn off ba ng maayos ang lahat ng kagamitan bago linisin ang TSV Room/Area',
 	'<em>Iba pang bagay na hindi nailagay sa itaas, pakilagay sa note field sa kanan</em>'
-];
+  ];
 
-const checklistBody = document.getElementById('checklistBody');
+  const checklistBody = document.getElementById('checklistBody');
+  checklistBody.innerHTML = ''; // Clear old rows
 
-tasks.forEach((task, index) => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>${index + 1}</td>
-    <td>${task}</td>
-    <td class="center"><input type="checkbox" class="opo" data-i="${index}"></td>
-    <td class="center"><input type="checkbox" class="hindi" data-i="${index}"></td>
-    <td><input type="text" class="comment"></td>`;
-  checklistBody.appendChild(tr);
-});
+  try {
+    tasks.forEach((task, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${task}</td>
+        <td class="center"><input type="checkbox" class="opo" data-i="${index}"></td>
+        <td class="center"><input type="checkbox" class="hindi" data-i="${index}"></td>
+        <td><input type="text" class="comment"></td>`;
+      checklistBody.appendChild(tr);
+    });
+  } catch(err) {
+    console.error('Error generating checklist rows:', err);
+  }
+}
 
 // -------- OPO / HINDI MUTUAL EXCLUSION --------
-checklistBody.addEventListener('change', e => {
+document.getElementById('checklistBody').addEventListener('change', e => {
   if (e.target.classList.contains('opo')) {
-    checklistBody.querySelectorAll(`.hindi[data-i="${e.target.dataset.i}"]`).forEach(h => h.checked = false);
+    document.querySelectorAll(`.hindi[data-i="${e.target.dataset.i}"]`).forEach(h => h.checked = false);
   }
   if (e.target.classList.contains('hindi')) {
-    checklistBody.querySelectorAll(`.opo[data-i="${e.target.dataset.i}"]`).forEach(o => o.checked = false);
+    document.querySelectorAll(`.opo[data-i="${e.target.dataset.i}"]`).forEach(o => o.checked = false);
   }
 });
 
@@ -131,6 +138,14 @@ session.addEventListener('change', () => {
 });
 
 // -------- AUTO DATE & TIME --------
+const topDate = document.getElementById('topDate');
+const topTime = document.getElementById('topTime');
+const bottomDate = document.getElementById('bottomDate');
+const bottomTime = document.getElementById('bottomTime');
+const operator = document.getElementById('operator');
+const pdm = document.getElementById('pdm');
+const remarks = document.getElementById('remarks');
+
 function setDateTime() {
   const now = new Date();
   const d = now.toLocaleDateString();
@@ -160,7 +175,7 @@ canvas.addEventListener('pointerleave', () => drawing = false);
 
 function clearSignature() { ctx.clearRect(0,0,canvas.width,canvas.height); }
 
-// -------- SAVE / LOAD (SAFE, NO DOM OVERWRITE) --------
+// -------- SAVE / LOAD --------
 function collectData() {
   const rows = [];
   document.querySelectorAll('#checklistBody tr').forEach((tr, i) => {
@@ -194,6 +209,8 @@ function saveData() {
 }
 
 function loadData() {
+  generateChecklistRows(); // always create rows first
+
   const saved = localStorage.getItem('tsvChecklistData');
   if (!saved) return;
   const data = JSON.parse(saved);
@@ -230,8 +247,6 @@ function applyDocumentTitle() {
   const suffix = getDateSuffix();
   document.title = `TSV_Revised_Checklist_${suffix}`;
 }
-
-// Apply title immediately (affects Save As / Print to PDF)
 applyDocumentTitle();
 
 // -------- EXPORT PDF (BROWSER PRINT) --------
@@ -240,8 +255,12 @@ function exportPDF() {
   window.print();
 }
 
-// -------- EMAIL (LIMITED BY BROWSER) --------
+// -------- EMAIL (BROWSER LIMITED) --------
 function submitEmail() {
   applyDocumentTitle();
   window.location.href = 'mailto:louwiz@gmail.com?subject=' + encodeURIComponent(document.title);
 }
+</script>
+
+</body>
+</html>
