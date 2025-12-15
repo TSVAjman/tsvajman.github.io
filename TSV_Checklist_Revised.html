@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TSV Revised Checklist</title>
+<title>TSV_Revised_Checklist</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; }
 h1 { text-align: center; color: teal; }
@@ -81,13 +81,14 @@ button { padding: 10px 14px; cursor: pointer; }
 <div class="actions">
 <button onclick="saveData()">Save</button>
 <button onclick="submitEmail()">Submit</button>
-<button onclick="window.print()">Export to PDF</button>
+<button onclick="exportPDF()">Export to PDF</button>
+
 </div>
 
 <script>
 // -------- CHECKLIST TASKS (RESTORED & FIXED) --------
 const tasks = [
-	'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
+  'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
 	'Na-set up ba ang Webex bago ang laro (hard mute, meeting option – na turn off ang send reaction, raise hand, share content)?',
 	'Na-check ba ang files na gagamitin (Video/Awit file week number, Timestamp ng pagpapatayo, volume ng audio sa mga pagpapatayo)?',
 	'Na-coordinate ba sa mga mang-aawit ang takda ng mga awit (Live at Video File/Awit File)?',
@@ -216,10 +217,31 @@ function loadData() {
 }
 loadData();
 
-// -------- EMAIL --------
-function submitEmail() {
-  window.location.href = 'mailto:louwiz@gmail.com?subject=TSV Revised Checklist';
+// -------- FILENAME WITH DATE HELPERS --------
+function getDateSuffix() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }
-</script>
-</body>
-</html>
+
+function applyDocumentTitle() {
+  const suffix = getDateSuffix();
+  document.title = `TSV_Revised_Checklist_${suffix}`;
+}
+
+// Apply title immediately (affects Save As / Print to PDF)
+applyDocumentTitle();
+
+// -------- EXPORT PDF (BROWSER PRINT) --------
+function exportPDF() {
+  applyDocumentTitle();
+  window.print();
+}
+
+// -------- EMAIL (LIMITED BY BROWSER) --------
+function submitEmail() {
+  applyDocumentTitle();
+  window.location.href = 'mailto:louwiz@gmail.com?subject=' + encodeURIComponent(document.title);
+}
