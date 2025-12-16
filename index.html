@@ -199,6 +199,30 @@
 </head>
 <body>
 
+  <!-- PIN Lock Script Start -->
+<script>
+  // Set your PIN here
+  const PIN_CODE = "1914";  // change this to whatever you like
+
+  // Prompt user until correct PIN is entered
+  let accessGranted = false;
+  while (!accessGranted) {
+    let userInput = prompt("Please enter the PIN to access this page:");
+    if (userInput === null) {
+      // user pressed cancel
+      document.body.innerHTML = "<h2>Access Denied</h2>";
+      break;
+    }
+    if (userInput === PIN_CODE) {
+      accessGranted = true;
+    } else {
+      alert("Incorrect PIN. Please try again.");
+    }
+  }
+</script>
+<!-- PIN Lock Script End -->
+
+
   <main class="wrap">
     
     <!-- Hero Image (Unchanged Source) -->
