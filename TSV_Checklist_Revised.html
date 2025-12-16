@@ -1,126 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TSV_Revised_Checklist</title>
-<style>
-body { font-family: Arial, sans-serif; margin: 20px; }
-h1 { text-align: center; color: teal; }
-label { font-weight: bold; }
-select, input[type="text"], textarea { width: 100%; padding: 6px; margin-top: 4px; box-sizing: border-box; }
-textarea { resize: vertical; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
-th { background: #f0f8f8; }
-.center { text-align: center; }
-.actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
-button { padding: 10px 14px; cursor: pointer; }
-.signature-box { border: 1px solid #aaa; height: 120px; width: 100%; touch-action: none; }
-.small-input { max-width: 250px; }
-@media print { .actions { display: none; } }
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TSV Revised Checklist</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-color: #008080; /* Teal */
+            --light-bg: #f4f6f9;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            padding-bottom: 60px;
+        }
+
+        .main-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--primary-color);
+            padding: 40px;
+            margin-top: 30px;
+            max-width: 1100px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Input Group Styling */
+        .input-group-text {
+            background-color: #eef2f3;
+            border-color: #dee2e6;
+            color: var(--primary-color);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(0, 128, 128, 0.25);
+        }
+
+        /* Custom Name Suggestion Dropdown */
+        #nameSuggestions {
+            max-height: 250px;
+            overflow-y: auto;
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        .suggestion-item {
+            cursor: pointer;
+            padding: 10px 15px;
+        }
+        .suggestion-item:hover {
+            background-color: #e9ecef;
+            color: var(--primary-color);
+        }
+
+        /* Checklist Grid Styling */
+        .grid-header {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 700;
+            padding: 12px 10px;
+            border-radius: 6px;
+            border-bottom: 2px solid #ced4da;
+            margin-bottom: 10px;
+        }
+
+        .task-row {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .task-row:hover {
+            background-color: #fcfcfc;
+        }
+
+        /* Mobile specific styling */
+        .mobile-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.85em;
+            margin-right: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Signature Canvas */
+        .signature-pad-wrapper {
+            position: relative;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .signature-box {
+            width: 100%;
+            height: 140px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        /* Buttons */
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #006666; border-color: #006666; }
+
+        /* PRINT STYLES */
+        @media print {
+            body { background-color: white; padding: 0; }
+            .main-container { 
+                box-shadow: none; 
+                margin: 0; 
+                padding: 0; 
+                max-width: 100%; 
+                width: 100%; 
+                border: none;
+            }
+            .no-print { display: none !important; }
+            #nameSuggestions { display: none !important; } /* Hide suggestions on print */
+            
+            /* Input resets for print */
+            .input-group-text { display: none; }
+            .form-control, .form-select { 
+                border: none; 
+                border-bottom: 1px solid #000; 
+                border-radius: 0; 
+                padding-left: 0;
+            }
+            
+            /* Force Grid to behave like a standard Table */
+            .grid-header { 
+                display: flex !important; 
+                background-color: #f0f0f0 !important; 
+                border: 1px solid #000;
+                color: black;
+                -webkit-print-color-adjust: exact; 
+                margin-bottom: 0;
+                border-radius: 0;
+            }
+            .task-row { 
+                display: flex !important; 
+                page-break-inside: avoid; 
+                border: 1px solid #000;
+                border-top: none; 
+                padding: 5px 0;
+                margin: 0;
+            }
+            
+            /* Print Column Widths */
+            .col-print-no { width: 5%; border-right: 1px solid #000; text-align: center; }
+            .col-print-desc { width: 45%; border-right: 1px solid #000; padding-left: 5px; }
+            .col-print-check { width: 10%; border-right: 1px solid #000; text-align: center; }
+            .col-print-note { width: 30%; padding-left: 5px; }
+
+            /* Checkbox visibility */
+            .form-check-input { border: 1px solid #000; opacity: 1; }
+            
+            /* Layout Helpers */
+            .d-md-block { display: block !important; }
+            .d-md-none { display: none !important; }
+            .row { margin-left: 0; margin-right: 0; }
+        }
+    </style>
 </head>
 <body>
 
-<h1>TSV Revised Checklist</h1>
+<div class="container main-container">
+    
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h2 class="text-uppercase"><i class="bi bi-clipboard-check me-2"></i>TSV Revised Checklist</h2>
+        <p class="text-muted">Technical Support for Video Streaming</p>
+    </div>
 
-<label>Araw at Oras</label>
-<select id="session">
-  <option value="">Select session</option>
-  <option>Tuesday 8:45pm</option>
-  <option>Friday 8:45pm</option>
-  <option>Saturday 6:45am</option>
-  <option>Sunday 10:45am</option>
-  <option value="other">Other</option>
-</select>
-<input type="text" id="sessionOther" placeholder="Please specify" style="display:none;" />
+    <!-- Top Form Section -->
+    <div class="card border-0 bg-light mb-4">
+        <div class="card-body p-4">
+            <div class="row g-3">
+                
+                <!-- Session -->
+                <div class="col-md-6">
+                  <label class="form-label fw-bold small text-uppercase text-muted">Araw at Oras</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                      <select id="session" class="form-select">
+                            <option value="">Select session...</option>
+                        <option>Tuesday 8:45pm</option>
+                        <option>Friday 8:45pm</option>
+                        <option>Saturday 6:45am</option>
+                        <option>Sunday 10:45am</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <input type="text" id="sessionOther" class="form-control mt-2" placeholder="Please specify other session" style="display:none;" />
+                </div>
+                
+                <!-- Operator (Custom Multi-select) -->
+                <div class="col-md-6 position-relative">
+                  <label class="form-label fw-bold small text-uppercase text-muted">Tumupad na TSV(s)</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                      <input type="text" id="operator" class="form-control" placeholder="Enter name(s)..." autocomplete="off">
+                    </div>
+                    <!-- Custom Dropdown List -->
+                  <div id="nameSuggestions" class="list-group position-absolute w-100 shadow start-0" style="z-index: 1050; display: none;">
+                        <!-- Items injected by JS -->
+                    </div>
+                </div>
 
-<br><br>
-<label>Tumupad na TSV(s)</label>
-<input type="text" id="operator" placeholder="Enter name(s)" />
+                <!-- Date & Time (Top) -->
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                      <input type="date" id="topDate" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase text-muted">Time</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                        <input type="time" id="topTime" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<br><br>
-<label>Date</label>
-<input type="text" id="topDate" class="small-input" />
-<label>Time</label>
-<input type="text" id="topTime" class="small-input" />
+    <!-- Checklist Header (Desktop/Print) -->
+    <div class="row grid-header d-none d-md-flex mx-1">
+        <div class="col-md-1 col-print-no text-center">#</div>
+        <div class="col-md-5 col-print-desc">Task Description</div>
+        <div class="col-md-1 col-print-check text-center">Opo</div>
+        <div class="col-md-1 col-print-check text-center">Hindi</div>
+        <div class="col-md-4 col-print-note">Note / Reason</div>
+    </div>
 
-<table>
-<thead>
-<tr>
-<th>No.</th>
-<th>Task Description</th>
-<th class="center">Opo</th>
-<th class="center">Hindi</th>
-<th>Paki-note bakit hindi naisagawa</th>
-</tr>
-</thead>
-<tbody id="checklistBody"></tbody>
-</table>
+    <!-- Checklist Body -->
+    <div id="checklistBody" class="px-2">
+        <!-- Rows Generated by JS -->
+    </div>
 
-<table>
-<tr>
-<th colspan="2">Mga naging suliranin sa pagtupad (Technical o Operational ay paki-note po):</th>
-</tr>
-<tr>
-<td rowspan="5">
-<textarea id="remarks" rows="8" placeholder="Ilagay ang mga naging suliranin..."></textarea>
-</td>
-<td>Date:<br><input type="text" id="bottomDate"></td>
-</tr>
-<tr><td>Time:<br><input type="text" id="bottomTime"></td></tr>
-<tr><td>PD/M:<br><input type="text" id="pdm"></td></tr>
-<tr>
-<td>Lagda:<br>
-<canvas id="signature" class="signature-box"></canvas><br>
-<button type="button" onclick="clearSignature()">Clear</button>
-</td>
-</tr>
-</table>
+    <!-- Footer Section -->
+    <div class="row mt-5 border-top pt-4 g-4">
+        
+        <!-- Remarks Area -->
+        <div class="col-lg-7">
+            <h6 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Mga naging suliranin sa pagtupad</h6>
+            <div class="input-group">
+                <span class="input-group-text align-items-start pt-2"><i class="bi bi-pencil"></i></span>
+                <textarea id="remarks" class="form-control" rows="8" placeholder="Please detail any technical or operational issues encountered..."></textarea>
+            </div>
+        </div>
+        
+        <!-- Sign Off Area -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white fw-bold text-uppercase small text-muted">
+                    Sign Off
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 row align-items-center">
+                        <label class="col-3 col-form-label fw-bold text-secondary">Date</label>
+                        <div class="col-9">
+                            <input type="date" id="bottomDate" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                    <div class="mb-3 row align-items-center">
+                        <label class="col-3 col-form-label fw-bold text-secondary">Time</label>
+                        <div class="col-9">
+                            <input type="time" id="bottomTime" class="form-control form-control-sm">
+                        </div>
+                    </div>
+                    <div class="mb-3 row align-items-center">
+                        <label class="col-3 col-form-label fw-bold text-secondary">PD/M</label>
+                        <div class="col-9">
+                          <input type="text" id="pdm" class="form-control form-control-sm" placeholder="Nangasiwang M (PD kung wala)">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="form-label fw-bold text-secondary small">TSV(s) SIGNATURE</label>
+                        <div class="signature-pad-wrapper">
+                            <canvas id="signature" class="signature-box"></canvas>
+                        </div>
+                        <div class="text-end mt-1 no-print">
+                            <button type="button" class="btn btn-link btn-sm text-danger text-decoration-none" onclick="clearSignature()">
+                                <i class="bi bi-eraser-fill"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="actions">
-<button onclick="saveData()">Save</button>
-<button onclick="submitEmail()">Submit</button>
-<button onclick="exportPDF()">Export to PDF</button>
+    <!-- Action Buttons -->
+    <div class="text-center mt-5 mb-3 no-print d-flex justify-content-center gap-3 flex-wrap">
+        <button class="btn btn-success px-4" onclick="submitEmail()">
+            <i class="bi bi-envelope me-2"></i> Submit via Email
+        </button>
+        <button class="btn btn-primary px-4" onclick="exportPDF()">
+            <i class="bi bi-printer me-2"></i> Print / PDF
+        </button>
+    </div>
+    
+    <div class="text-center text-muted small mt-4 no-print">
+    &copy; 2025 Technical  Support for Video Streaming</div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+// -------- PREDEFINED NAMES LIST --------
+const tsvNames = [
+    "Louie Alma",
+    "Mark Morgan Miranda",
+    "Esmer Buan",
+    "Paul Vincent Crespo",
+	"Jomar Soriano",
+    "Andrey Buan",
+    "Dominic Soriano",
+    "Christopher Lloyd Jardeleza",
+	"Dominic Mateo",
+    "Karl Stephen Alma",
+	"Joshua Esposo",
+    "Carla Mae Vidal (Trainee)",
+	"Megan Chloe Alma (Trainee)",
+	"Aven Chrysler Alcalde (Trainee)",
+	"Aedriel Buan (Trainee)"
+];
+
+// -------- MULTI-SELECT NAME LOGIC --------
+const operatorInput = document.getElementById('operator');
+const suggestionsBox = document.getElementById('nameSuggestions');
+
+// Filter and Show Suggestions
+operatorInput.addEventListener('input', function() {
+    const val = this.value;
+    const lastCommaIndex = val.lastIndexOf(',');
+    // Get text after the last comma (trim whitespace)
+    const currentSearch = val.substring(lastCommaIndex + 1).trim().toLowerCase();
+
+    suggestionsBox.innerHTML = '';
+    
+    if (currentSearch === '' && val.trim().endsWith(',')) {
+        // If user just typed a comma, show all
+        renderSuggestions(tsvNames);
+        return;
+    }
+
+    // Filter names
+    const matches = tsvNames.filter(name => name.toLowerCase().includes(currentSearch));
+    
+    if (matches.length > 0) {
+        renderSuggestions(matches);
+    } else {
+        suggestionsBox.style.display = 'none';
+    }
+});
+
+// Show full list on focus if empty or ends with comma
+operatorInput.addEventListener('focus', function() {
+    const val = this.value.trim();
+    if (val === '' || val.endsWith(',')) {
+        renderSuggestions(tsvNames);
+    }
+});
+
+// Hide suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    if (!operatorInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.style.display = 'none';
+    }
+});
+
+function renderSuggestions(names) {
+    suggestionsBox.innerHTML = '';
+    names.forEach(name => {
+        const item = document.createElement('a');
+        item.className = 'list-group-item list-group-item-action suggestion-item';
+        item.textContent = name;
+        item.onclick = function() {
+            selectName(name);
+        };
+        suggestionsBox.appendChild(item);
+    });
+    suggestionsBox.style.display = 'block';
+}
+
+function selectName(name) {
+    const currentVal = operatorInput.value;
+    const lastCommaIndex = currentVal.lastIndexOf(',');
+    
+    // If there was text before, keep it up to the last comma
+    let newVal = '';
+    if (lastCommaIndex !== -1) {
+        newVal = currentVal.substring(0, lastCommaIndex + 1) + ' ';
+    }
+    
+    newVal += name + ', ';
+    
+    operatorInput.value = newVal;
+    suggestionsBox.style.display = 'none';
+    operatorInput.focus();
+}
+
+
 // -------- GENERATE CHECKLIST ROWS --------
 function generateChecklistRows() {
   const tasks = [
-	'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
-	'Na-set up ba ang Webex bago ang laro (hard mute, meeting option – na turn off ang send reaction, raise hand, share content)?',
-	'Na-check ba ang files na gagamitin (Video/Awit file week number, Timestamp ng pagpapatayo, volume ng audio sa mga pagpapatayo)?',
-	'Na-coordinate ba sa mga mang-aawit ang takda ng mga awit (Live at Video File/Awit File)?',
-	'Nagawa ba ang pakikipag coordinate sa PD o M na mangunguna?',
-	'Maayos ba ang backup computer - both Video/Audio?',
-	'Maayos ba ang Audio at Video sa bawat rooms?',
-	'Nai-setup o nai-saayos ba ang ba ang English na laro?',
-	'Na turn off ba ng maayos ang lahat ng kagamitan bago linisin ang TSV Room/Area',
-	'<em>Iba pang bagay na hindi nailagay sa itaas, pakilagay sa note field sa kanan</em>'
+    'Nabuksan ba lahat ng kagamitan at naiset ang Audio levels sa Standard Settings?',
+    'Na-set up ba ang Webex bago ang laro (hard mute, meeting option – na turn off ang send reaction, raise hand, share content)?',
+    'Na-check ba ang files na gagamitin (Video/Awit file week number, Timestamp ng pagpapatayo, volume ng audio sa mga pagpapatayo)?',
+    'Na-coordinate ba sa mga mang-aawit ang takda ng mga awit (Live at Video File/Awit File)?',
+    'Nagawa ba ang pakikipag coordinate sa PD o M na mangunguna?',
+    'Maayos ba ang backup computer - both Video/Audio?',
+    'Maayos ba ang Audio at Video sa bawat rooms?',
+    'Nai-setup o nai-saayos ba ang ba ang English na laro?',
+    'Na turn off ba ng maayos ang lahat ng kagamitan bago linisin ang TSV Room/Area',
+    '<em>Iba pang bagay na hindi nailagay sa itaas, pakilagay sa note field sa kanan</em>'
   ];
 
   const checklistBody = document.getElementById('checklistBody');
-  checklistBody.innerHTML = ''; // Clear old rows
+  checklistBody.innerHTML = ''; 
 
   try {
     tasks.forEach((task, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${task}</td>
-        <td class="center"><input type="checkbox" class="opo" data-i="${index}"></td>
-        <td class="center"><input type="checkbox" class="hindi" data-i="${index}"></td>
-        <td><input type="text" class="comment"></td>`;
-      checklistBody.appendChild(tr);
+      // Row
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'row task-row align-items-center';
+      
+      rowDiv.innerHTML = `
+        <!-- No. -->
+        <div class="col-12 col-md-1 col-print-no text-md-center fw-bold mb-2 mb-md-0 text-secondary">
+           <span class="d-md-none me-2">#</span>${index + 1}
+        </div>
+        
+        <!-- Description -->
+        <div class="col-12 col-md-5 col-print-desc mb-2 mb-md-0">
+           ${task}
+        </div>
+        
+        <!-- Opo -->
+        <div class="col-6 col-md-1 col-print-check text-center mb-2 mb-md-0">
+           <label class="d-flex align-items-center justify-content-center cursor-pointer">
+             <span class="mobile-label d-md-none">Opo: </span>
+             <input type="checkbox" class="form-check-input opo border-secondary" data-i="${index}" style="width: 1.3em; height: 1.3em;">
+           </label>
+        </div>
+        
+        <!-- Hindi -->
+        <div class="col-6 col-md-1 col-print-check text-center mb-2 mb-md-0">
+           <label class="d-flex align-items-center justify-content-center cursor-pointer">
+             <span class="mobile-label d-md-none">Hindi: </span>
+             <input type="checkbox" class="form-check-input hindi border-secondary" data-i="${index}" style="width: 1.3em; height: 1.3em;">
+           </label>
+        </div>
+        
+        <!-- Comment -->
+        <div class="col-12 col-md-4 col-print-note">
+           <input type="text" class="form-control form-control-sm comment" placeholder="Add details if 'Hindi'...">
+        </div>
+      `;
+      checklistBody.appendChild(rowDiv);
     });
   } catch(err) {
     console.error('Error generating checklist rows:', err);
   }
 }
 
-// -------- OPO / HINDI MUTUAL EXCLUSION --------
+// -------- LOGIC --------
+
+// Mutual Exclusion for Opo/Hindi
 document.getElementById('checklistBody').addEventListener('change', e => {
   if (e.target.classList.contains('opo')) {
     document.querySelectorAll(`.hindi[data-i="${e.target.dataset.i}"]`).forEach(h => h.checked = false);
@@ -130,71 +492,117 @@ document.getElementById('checklistBody').addEventListener('change', e => {
   }
 });
 
-// -------- SESSION OTHER --------
+// Session Other Toggle
 const session = document.getElementById('session');
 const sessionOther = document.getElementById('sessionOther');
 session.addEventListener('change', () => {
   sessionOther.style.display = session.value === 'other' ? 'block' : 'none';
 });
 
-// -------- AUTO DATE & TIME --------
+// Auto Date & Time Init
 const topDate = document.getElementById('topDate');
 const topTime = document.getElementById('topTime');
 const bottomDate = document.getElementById('bottomDate');
 const bottomTime = document.getElementById('bottomTime');
-const operator = document.getElementById('operator');
-const pdm = document.getElementById('pdm');
-const remarks = document.getElementById('remarks');
 
-function setDateTime() {
+function initDateTime() {
   const now = new Date();
-  const d = now.toLocaleDateString();
-  const t = now.toLocaleTimeString();
-  if (!topDate.value) topDate.value = d;
-  if (!topTime.value) topTime.value = t;
-  if (!bottomDate.value) bottomDate.value = d;
-  if (!bottomTime.value) bottomTime.value = t;
-}
-setDateTime();
+  
+  // Format YYYY-MM-DD for input type="date"
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const dateStr = `${yyyy}-${mm}-${dd}`;
 
-// -------- SIGNATURE --------
+  // Format HH:MM for input type="time"
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const timeStr = `${hh}:${min}`;
+
+  if (!topDate.value) topDate.value = dateStr;
+  if (!topTime.value) topTime.value = timeStr;
+  if (!bottomDate.value) bottomDate.value = dateStr;
+  if (!bottomTime.value) bottomTime.value = timeStr;
+}
+initDateTime();
+
+// -------- SIGNATURE CANVAS --------
 const canvas = document.getElementById('signature');
 const ctx = canvas.getContext('2d');
 let drawing = false;
+
 function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  const parent = canvas.parentElement;
+  canvas.width = parent.clientWidth;
+  canvas.height = parent.clientHeight;
+  ctx.lineWidth = 2; 
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#000";
 }
-resizeCanvas();
+
+// Initial Resize
+window.addEventListener('load', resizeCanvas);
 window.addEventListener('resize', resizeCanvas);
 
-canvas.addEventListener('pointerdown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-canvas.addEventListener('pointermove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
-canvas.addEventListener('pointerup', () => drawing = false);
-canvas.addEventListener('pointerleave', () => drawing = false);
+// Mouse
+canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseleave', () => drawing = false);
 
-function clearSignature() { ctx.clearRect(0,0,canvas.width,canvas.height); }
+// Touch
+function getTouchPos(canvasDom, touchEvent) {
+  var rect = canvasDom.getBoundingClientRect();
+  return {
+    x: touchEvent.touches[0].clientX - rect.left,
+    y: touchEvent.touches[0].clientY - rect.top
+  };
+}
+
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  drawing = true;
+  const pos = getTouchPos(canvas, e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+}, {passive: false});
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!drawing) return;
+  const pos = getTouchPos(canvas, e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}, {passive: false});
+
+canvas.addEventListener('touchend', () => drawing = false);
+
+function clearSignature() { 
+    ctx.clearRect(0,0,canvas.width,canvas.height); 
+    ctx.beginPath();
+}
 
 // -------- SAVE / LOAD --------
 function collectData() {
   const rows = [];
-  document.querySelectorAll('#checklistBody tr').forEach((tr, i) => {
+  document.querySelectorAll('.task-row').forEach((row, i) => {
     rows.push({
-      opo: tr.querySelector('.opo').checked,
-      hindi: tr.querySelector('.hindi').checked,
-      comment: tr.querySelector('.comment').value
+      opo: row.querySelector('.opo').checked,
+      hindi: row.querySelector('.hindi').checked,
+      comment: row.querySelector('.comment').value
     });
   });
+  
   return {
     session: session.value,
     sessionOther: sessionOther.value,
-    operator: operator.value,
+    operator: operatorInput.value,
     topDate: topDate.value,
     topTime: topTime.value,
     bottomDate: bottomDate.value,
     bottomTime: bottomTime.value,
-    pdm: pdm.value,
-    remarks: remarks.value,
+    pdm: document.getElementById('pdm').value,
+    remarks: document.getElementById('remarks').value,
     checklist: rows
   };
 }
@@ -202,63 +610,85 @@ function collectData() {
 function saveData() {
   try {
     localStorage.setItem('tsvChecklistData', JSON.stringify(collectData()));
-    alert('Checklist saved on this device/browser.');
-  } catch {
-    alert('Saving failed. Storage may be blocked by browser privacy settings.');
+    const sigData = canvas.toDataURL();
+    localStorage.setItem('tsvSignature', sigData);
+    alert('Progress saved locally.');
+  } catch (e) {
+    alert('Error saving data: ' + e);
   }
 }
 
 function loadData() {
-  generateChecklistRows(); // always create rows first
+  generateChecklistRows(); // Generate HTML first
 
   const saved = localStorage.getItem('tsvChecklistData');
   if (!saved) return;
-  const data = JSON.parse(saved);
+  
+  try {
+      const data = JSON.parse(saved);
 
-  session.value = data.session || '';
-  sessionOther.value = data.sessionOther || '';
-  operator.value = data.operator || '';
-  topDate.value = data.topDate || '';
-  topTime.value = data.topTime || '';
-  bottomDate.value = data.bottomDate || '';
-  bottomTime.value = data.bottomTime || '';
-  pdm.value = data.pdm || '';
-  remarks.value = data.remarks || '';
+      session.value = data.session || '';
+      sessionOther.value = data.sessionOther || '';
+      if(session.value === 'other') sessionOther.style.display = 'block';
+      
+      operatorInput.value = data.operator || '';
+      topDate.value = data.topDate || '';
+      topTime.value = data.topTime || '';
+      bottomDate.value = data.bottomDate || '';
+      bottomTime.value = data.bottomTime || '';
+      document.getElementById('pdm').value = data.pdm || '';
+      document.getElementById('remarks').value = data.remarks || '';
 
-  document.querySelectorAll('#checklistBody tr').forEach((tr, i) => {
-    if (!data.checklist[i]) return;
-    tr.querySelector('.opo').checked = data.checklist[i].opo;
-    tr.querySelector('.hindi').checked = data.checklist[i].hindi;
-    tr.querySelector('.comment').value = data.checklist[i].comment;
-  });
+      const rows = document.querySelectorAll('.task-row');
+      rows.forEach((row, i) => {
+        if (!data.checklist[i]) return;
+        row.querySelector('.opo').checked = data.checklist[i].opo;
+        row.querySelector('.hindi').checked = data.checklist[i].hindi;
+        row.querySelector('.comment').value = data.checklist[i].comment;
+      });
+      
+      const sigData = localStorage.getItem('tsvSignature');
+      if (sigData) {
+          const img = new Image();
+          img.onload = function() { ctx.drawImage(img,0,0); };
+          img.src = sigData;
+      }
+  } catch(e) {
+      console.error("Error loading data", e);
+  }
 }
+
+// Initial Load
 loadData();
 
-// -------- FILENAME WITH DATE HELPERS --------
-function getDateSuffix() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
-}
-
+// -------- EXPORT / PRINT --------
 function applyDocumentTitle() {
-  const suffix = getDateSuffix();
-  document.title = `TSV_Revised_Checklist_${suffix}`;
-}
-applyDocumentTitle();
+  const d = new Date();
+  // Get date component
+  const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
+  
+  // Get time component (HH-MM)
+  const hours = String(d.getHours()).padStart(2, '0');
+  const mins = String(d.getMinutes()).padStart(2, '0');
+  const timeStr = `${hours}-${mins}`;
 
-// -------- EXPORT PDF (BROWSER PRINT) --------
+  document.title = `TSV_Checklist_${dateStr}_${timeStr}`;
+}
+
 function exportPDF() {
   applyDocumentTitle();
   window.print();
 }
 
-// -------- EMAIL (BROWSER LIMITED) --------
 function submitEmail() {
   applyDocumentTitle();
-  window.location.href = 'mailto:louwiz@gmail.com?subject=' + encodeURIComponent(document.title);
+  let body = "TSV Checklist Submission\n\n";
+  body += `Operator(s): ${operatorInput.value}\n`;
+  body += `Date: ${topDate.value} ${topTime.value}\n`;
+  body += `Session: ${session.value}\n\n`;
+  body += "Please see attached PDF (Save as PDF and attach manually).";
+  
+  window.location.href = `mailto:?subject=${encodeURIComponent(document.title)}&body=${encodeURIComponent(body)}`;
 }
 </script>
 
