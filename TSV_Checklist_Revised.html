@@ -174,26 +174,58 @@
 </head>
 <body>
 
-	  <!-- PIN Lock Script Start -->
+<!-- PIN Lock Script Start -->
+<style>
+  /* 1. Hide the body contents immediately */
+  body {
+    display: none;
+  }
+</style>
+
 <script>
   // Set your PIN here
-  const PIN_CODE = "1914";  // change this to whatever you like
+  const PIN_CODE = "1914"; 
 
-  // Prompt user until correct PIN is entered
-  let accessGranted = false;
-  while (!accessGranted) {
-    let userInput = prompt("Please enter the PIN to access this page:");
-    if (userInput === null) {
-      // user pressed cancel
-      document.body.innerHTML = "<h2>Access Denied</h2>";
-      break;
+  (function() {
+    let accessGranted = false;
+
+    while (!accessGranted) {
+      let userInput = prompt("Please enter the PIN to access this page:");
+
+      // User pressed cancel
+      if (userInput === null) {
+        // 2. Stop the browser from loading the rest of the HTML
+        if (window.stop) {
+          window.stop();
+        } else {
+          document.execCommand("Stop"); // Fallback for older IE
+        }
+
+        // 3. Overwrite the entire document with the error message
+        document.documentElement.innerHTML = "<h2>Access Denied</h2>";
+        
+        // Make sure the body (if it exists) is visible so we see the error
+        if(document.body) document.body.style.display = "block";
+        
+        throw new Error("Access Denied"); // Stop script execution
+      }
+
+      if (userInput === PIN_CODE) {
+        accessGranted = true;
+      } else {
+        alert("Incorrect PIN. Please try again.");
+      }
     }
-    if (userInput === PIN_CODE) {
-      accessGranted = true;
-    } else {
-      alert("Incorrect PIN. Please try again.");
-    }
-  }
+
+    // 4. If correct, reveal the page
+    // We wait for the DOM to be ready to ensure body exists, then show it
+    window.addEventListener('DOMContentLoaded', () => {
+        document.body.style.display = "block";
+    });
+    // Immediate fallback in case DOMContentLoaded already fired
+    if(document.body) document.body.style.display = "block";
+
+  })();
 </script>
 <!-- PIN Lock Script End -->
 
@@ -717,5 +749,6 @@ function submitEmail() {
 
 </body>
 </html>
+
 
 
