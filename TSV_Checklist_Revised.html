@@ -193,15 +193,15 @@
     <div class="row mt-4 pt-3 border-top g-4">
         <div class="col-7">
             <h6 class="fw-bold mb-2">Mga naging suliranin sa pagtupad:</h6>
-            <textarea id="remarks" class="form-control sync" data-target="p-remarks" rows="6" placeholder="Detail any issues encountered..."></textarea>
+            <textarea id="remarks" class="form-control sync" data-target="p-remarks" rows="6" placeholder="Please detail any technical or operational issues encountered..."></textarea>
             <div id="p-remarks" class="print-val" style="min-height: 120px; border: 1px solid #eee; padding: 5px;"></div>
         </div>
         
         <div class="col-5">
             <div class="card p-3 border">
                 <div class="mb-3">
-                    <label class="small fw-bold">M/PD (Nangasiwa):</label>
-                    <input type="text" id="pdm" class="form-control form-control-sm sync" data-target="p-pdm">
+                    <label class="small fw-bold">M/PD:</label>
+                    <input type="text" id="pdm" class="form-control form-control-sm sync" data-target="p-pdm" placeholder="Nangasiwang M (PD kung wala)">
                     <span id="p-pdm" class="print-val border-bottom fw-bold"></span>
                 </div>
                 
@@ -416,3 +416,4 @@ async function uploadToCloud() {
 
 </body>
 </html>
+
