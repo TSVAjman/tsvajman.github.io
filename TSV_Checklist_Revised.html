@@ -359,7 +359,8 @@ async function uploadToCloud() {
     const status = document.getElementById('statusMsg');
     
     // Replace this URL with the one you copied from Google Apps Script deployment
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzKxAW2X77fwyTR2x8Bs3qymx9UW19oVe-QjE17-M-oO9g8ltAuzJR5CwWR4i3ckk3o/exec";
+	const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCFxyDEUMMsM2p07TGJJnG8wtLnC9FY9IsUP7-YdYxpV7-hMiuYuEC3hEW016K6mvm/exec";
+	
 
     // Disable button to prevent double submission
     btn.disabled = true;
@@ -387,7 +388,7 @@ async function uploadToCloud() {
         remarks: document.getElementById('remarks').value,
         pdm: document.getElementById('pdm').value,
         tasks: taskResults,
-        signature: sigData
+        signature: ""
     };
 
     try {
