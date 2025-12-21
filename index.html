@@ -207,52 +207,22 @@
   }
 </style>
 
-<script>
-  // Set your PIN here
-  const PIN_CODE = "1914"; 
-
+<!-- PIN Logic -->
+<script id="auth-gate">
   (function() {
-    let accessGranted = false;
-
-    while (!accessGranted) {
-      let userInput = prompt("Please enter the PIN to access this page:");
-
-      // User pressed cancel
-      if (userInput === null) {
-        // 2. Stop the browser from loading the rest of the HTML
-        if (window.stop) {
-          window.stop();
-        } else {
-          document.execCommand("Stop"); // Fallback for older IE
-        }
-
-        // 3. Overwrite the entire document with the error message
-        document.documentElement.innerHTML = "<h2>Access Denied</h2>";
-        
-        // Make sure the body (if it exists) is visible so we see the error
-        if(document.body) document.body.style.display = "block";
-        
-        throw new Error("Access Denied"); // Stop script execution
-      }
-
-      if (userInput === PIN_CODE) {
-        accessGranted = true;
-      } else {
-        alert("Incorrect PIN. Please try again.");
-      }
-    }
-
-    // 4. If correct, reveal the page
-    // We wait for the DOM to be ready to ensure body exists, then show it
-    window.addEventListener('DOMContentLoaded', () => {
+    const _secret = "31393134"; // Hex for INC Year
+    const _v = (s) => s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
+    while (true) {
+      let p = prompt("Please enter the PIN to access this page:");
+      if (p === null) { document.body.innerHTML = "<h1>Access Denied</h1>"; break; }
+      if (_v(p)) {
         document.body.style.display = "block";
-    });
-    // Immediate fallback in case DOMContentLoaded already fired
-    if(document.body) document.body.style.display = "block";
-
+        document.getElementById('auth-gate').remove(); 
+        break;
+      } else { alert("Incorrect PIN."); }
+    }
   })();
 </script>
-<!-- PIN Lock Script End -->
 
 
   <main class="wrap">
