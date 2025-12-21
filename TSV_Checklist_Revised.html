@@ -115,7 +115,7 @@
 <!-- PIN Logic -->
 <script id="auth-gate">
   (function() {
-    const _secret = "31393134"; // Hex for 1914
+    const _secret = "31393134"; // Hex for INC year
     const _v = (s) => s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
     while (true) {
       let p = prompt("Please enter the PIN to access this page:");
@@ -417,5 +417,6 @@ async function uploadToCloud() {
 
 </body>
 </html>
+
 
 
