@@ -192,49 +192,59 @@
   }
 </style>
 
-<script>
-  // Set your PIN here
-  const PIN_CODE = "1914"; 
-
+<!-- PIN Logic -->
+<script id="auth-gate">
   (function() {
-    let accessGranted = false;
+    const _secret = "31393134"; // Hex for INC Year
+    
+    // Validation function
+    const _v = (s) => s && s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
 
-    while (!accessGranted) {
-      let userInput = prompt("Please enter the PIN to access this page:");
+    while (true) {
+      let p = prompt("Please enter the PIN to access this page:");
 
-      // User pressed cancel
-      if (userInput === null) {
-        // 2. Stop the browser from loading the rest of the HTML
+      // --- CASE 1: User hits Cancel / ESC ---
+      if (p === null) { 
+        // 1. Stop the browser from downloading/parsing the rest of the HTML
         if (window.stop) {
           window.stop();
         } else {
-          document.execCommand("Stop"); // Fallback for older IE
+          document.execCommand("Stop"); // Fallback
         }
 
-        // 3. Overwrite the entire document with the error message
-        document.documentElement.innerHTML = "<h2>Access Denied</h2>";
+        // 2. Overwrite the page with the error
+        document.documentElement.innerHTML = "<h1>Access Denied</h1>";
         
-        // Make sure the body (if it exists) is visible so we see the error
+        // 3. Make the error visible (since we hid body in CSS above)
         if(document.body) document.body.style.display = "block";
         
-        throw new Error("Access Denied"); // Stop script execution
+        // 4. Throw error to kill the script execution immediately
+        throw new Error("Access Denied");
       }
 
-      if (userInput === PIN_CODE) {
-        accessGranted = true;
-      } else {
-        alert("Incorrect PIN. Please try again.");
+      // --- CASE 2: Correct PIN ---
+      if (_v(p)) {
+        // Reveal the page
+        if(document.body) {
+            document.body.style.display = "block";
+        } else {
+            // Wait for body to exist if script runs too early
+            window.addEventListener('DOMContentLoaded', () => {
+                document.body.style.display = "block";
+            });
+        }
+        
+        // Remove this script tag to clean up
+        const el = document.getElementById('auth-gate');
+        if(el) el.remove(); 
+        break;
+      } 
+      
+      // --- CASE 3: Incorrect PIN ---
+      else { 
+        alert("Incorrect PIN."); 
       }
     }
-
-    // 4. If correct, reveal the page
-    // We wait for the DOM to be ready to ensure body exists, then show it
-    window.addEventListener('DOMContentLoaded', () => {
-        document.body.style.display = "block";
-    });
-    // Immediate fallback in case DOMContentLoaded already fired
-    if(document.body) document.body.style.display = "block";
-
   })();
 </script>
 <!-- PIN Lock Script End -->
@@ -574,6 +584,7 @@
 
 </body>
 </html>
+
 
 
 
