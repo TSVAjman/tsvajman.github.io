@@ -92,15 +92,54 @@
 <script id="auth-gate">
   (function() {
     const _secret = "31393134"; // Hex for INC Year
-    const _v = (s) => s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
+    
+    // Validation function
+    const _v = (s) => s && s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
+
     while (true) {
       let p = prompt("Please enter the PIN to access this page:");
-      if (p === null) { document.body.innerHTML = "<h1>Access Denied</h1>"; break; }
+
+      // --- CASE 1: User hits Cancel / ESC ---
+      if (p === null) { 
+        // 1. Stop the browser from downloading/parsing the rest of the HTML
+        if (window.stop) {
+          window.stop();
+        } else {
+          document.execCommand("Stop"); // Fallback
+        }
+
+        // 2. Overwrite the page with the error
+        document.documentElement.innerHTML = "<h1>Access Denied</h1>";
+        
+        // 3. Make the error visible (since we hid body in CSS above)
+        if(document.body) document.body.style.display = "block";
+        
+        // 4. Throw error to kill the script execution immediately
+        throw new Error("Access Denied");
+      }
+
+      // --- CASE 2: Correct PIN ---
       if (_v(p)) {
-        document.body.style.display = "block";
-        document.getElementById('auth-gate').remove(); 
+        // Reveal the page
+        if(document.body) {
+            document.body.style.display = "block";
+        } else {
+            // Wait for body to exist if script runs too early
+            window.addEventListener('DOMContentLoaded', () => {
+                document.body.style.display = "block";
+            });
+        }
+        
+        // Remove this script tag to clean up
+        const el = document.getElementById('auth-gate');
+        if(el) el.remove(); 
         break;
-      } else { alert("Incorrect PIN."); }
+      } 
+      
+      // --- CASE 3: Incorrect PIN ---
+      else { 
+        alert("Incorrect PIN."); 
+      }
     }
   })();
 </script>
@@ -153,6 +192,7 @@
 
 </body>
 </html>
+
 
 
 
