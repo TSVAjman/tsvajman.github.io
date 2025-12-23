@@ -210,7 +210,7 @@
 <!-- PIN Logic -->
 <script id="auth-gate">
   (function() {
-    const _secret = "31393134"; // Hex for "1914"
+    const _secret = "31393134"; // Hex for INC Year
     
     // Validation function
     const _v = (s) => s && s.split('').map(c => c.charCodeAt(0).toString(16)).join('') === _secret;
