@@ -220,30 +220,34 @@
     <!-- Action Buttons -->
 
 function saveAsPDF() {
+    // 1. Save the original page title
     const originalTitle = document.title;
-    const operatorInput = document.getElementById('operator').value.trim();
-    
-    // Default to "TSV" if name is empty, otherwise clean the name for filename
-    const firstOperator = operatorInput ? operatorInput.split(',')[0].replace(/[^a-z0-9]/gi, '_') : "TSV";
-    
+
+    // 2. Get and clean the Operator Name
+    const opInput = document.getElementById('operator').value.trim();
+    const cleanName = opInput ? opInput.split(',')[0].replace(/[^a-z0-9]/gi, '_') : "TSV";
+
+    // 3. Get the Current Date and Time
     const now = new Date();
-    const dateStr = now.toISOString().split('T')[0];
+    const dateStr = now.getFullYear() + '-' + (now.getMonth() + 1).toString().padStart(2, '0') + '-' + now.getDate().toString().padStart(2, '0');
     const timeStr = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
 
-    const fileName = `Checklist_${firstOperator}_${dateStr}_${timeStr}`;
-    document.title = fileName;
+    // 4. Set the temporary title (the filename)
+    document.title = "Checklist_" + cleanName + "_" + dateStr + "_" + timeStr;
 
+    // 5. Open the print dialog
     window.print();
 
-    setTimeout(() => {
+    // 6. Restore the original title after a 1-second delay
+    setTimeout(function() {
         document.title = originalTitle;
     }, 1000);
 }
 	
    <div class="text-center mt-5 no-print">
 	<button class="btn btn-primary px-5 btn-lg shadow" onclick="saveAsPDF()">
-        <i class="bi bi-file-pdf-fill me-2"></i> Save Checklist as PDF
-    </button>		
+    	<i class="bi bi-file-pdf-fill me-2"></i> Save Checklist as PDF
+	</button>		
     <!-- NEW BUTTON -->
     <button id="submitBtn" class="btn btn-success px-5 btn-lg shadow ms-2" onclick="uploadToCloud()">
         <i class="bi bi-cloud-upload-fill me-2"></i> Save on Google Drive
@@ -441,6 +445,7 @@ async function uploadToCloud() {
 
 </body>
 </html>
+
 
 
 
