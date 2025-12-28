@@ -218,8 +218,35 @@
     </div>
 
     <!-- Action Buttons -->
+
+function saveAsPDF() {
+    // 1. Get the current title to restore it later
+    const originalTitle = document.title;
+
+    // 2. Get the Operator Name (first one) and Date
+    const operatorInput = document.getElementById('operator').value.trim();
+    const firstOperator = operatorInput.split(',')[0].replace(/[^a-z0-9]/gi, '_'); // Clean name for filename
+    
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = now.getHours().toString().padStart(2, '0') + 
+                    now.getMinutes().toString().padStart(2, '0');
+
+    // 3. Set the temporary title (This becomes the Filename)
+    const fileName = `Checklist_${firstOperator}_${dateStr}_${timeStr}`;
+    document.title = fileName;
+
+    // 4. Trigger the Print dialog
+    window.print();
+
+    // 5. Restore original title after the dialog closes
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 100);
+}	
+	
    <div class="text-center mt-5 no-print">
-    <button class="btn btn-primary px-5 btn-lg shadow" onclick="window.print()">
+	<button class="btn btn-primary px-5 btn-lg shadow" onclick="saveAsPDF()">
         <i class="bi bi-file-pdf-fill me-2"></i> Save Checklist as PDF
     </button>		
     <!-- NEW BUTTON -->
@@ -419,6 +446,7 @@ async function uploadToCloud() {
 
 </body>
 </html>
+
 
 
 
